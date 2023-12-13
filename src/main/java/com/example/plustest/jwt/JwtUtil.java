@@ -107,4 +107,14 @@ public class JwtUtil {
         }
     }
 
+    public String createExpiredToken(String username) {
+        // expiration 시간을 현재 시간보다 이전으로 설정하여 만료된 토큰을 생성
+        return Jwts.builder()
+                .setSubject(username)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() - 1000)) // 현재 시간보다 1초 이전으로 설정하여 만료
+                .signWith(SignatureAlgorithm.HS512, secretKey)
+                .compact();
+    }
+
 }
