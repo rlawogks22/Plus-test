@@ -1,7 +1,10 @@
 package com.example.plustest.contorller;
 
-import com.example.plustest.dto.SignupRequestDto;
+import com.example.plustest.dto.CommonResponseDto;
+import com.example.plustest.dto.UserRequestDto;
+import com.example.plustest.jwt.JwtUtil;
 import com.example.plustest.service.UserService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -17,15 +20,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/users")
 public class UserController {
     private final UserService userService;
+    private final JwtUtil jwtUtil;
 
     @PostMapping("/signup")
-    public ResponseEntity<String> signUp(@RequestBody SignupRequestDto signupRequestDto) {
-        String username = signupRequestDto.getUsername();
-        String password = signupRequestDto.getPassword();
-        // 아이디 중복 체크
-        if (!userService.isUsernameUnique(username)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("중복된 아이디가 존재합니다.");
-        }
+    public ResponseEntity<String> signUp(@RequestBody UserRequestDto userRequestDto) {
+        String username = userRequestDto.getUsername();
+        String password = userRequestDto.getPassword();
         try {
             // 회원가입
             userService.signUp(username, password);
@@ -34,5 +34,18 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
+    @PostMapping("/login")
+    public ResponseEntity<CommonResponseDto> login(@RequestBody UserRequestDto requestDto, HttpServletResponse response){
+        try {
+            userService.login(requestDto,response);
+        } catch (IllegalArgumentException e){
+            return ResponseEntity.badRequest().body(new CommonResponseDto(e.getMessage(),HttpStatus.BAD_REQUEST.value()));
+        }
+        response.setHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(requestDto.getUsername()));
+
+        return ResponseEntity.ok().body(new CommonResponseDto("로그인 성공", HttpStatus.OK.value()));
+
+    }
+
 }
 
