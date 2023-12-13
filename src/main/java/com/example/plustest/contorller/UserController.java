@@ -29,10 +29,11 @@ public class UserController {
     @PostMapping("/signup")
     public ResponseEntity<String> signUp(@RequestBody UserRequestDto userRequestDto) {
         String username = userRequestDto.getUsername();
+        String nickname = userRequestDto.getNickname();
         String password = userRequestDto.getPassword();
         try {
             // 회원가입
-            userService.signUp(username, password);
+            userService.signUp(username,nickname,password);
             return ResponseEntity.ok("회원가입 성공");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());

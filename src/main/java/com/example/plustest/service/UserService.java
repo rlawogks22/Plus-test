@@ -20,7 +20,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
-    public User signUp(String username, String password) {
+    public User signUp(String username,String nickname, String password) {
         // 아이디 중복 체크
         Optional<User> checkUsername = userRepository.findByUsername(username);
         if (checkUsername.isPresent()) {
@@ -34,6 +34,7 @@ public class UserService {
         User newUser = new User();
         newUser.setUsername(username);
         newUser.setPassword(encodedPassword);
+        newUser.setNickname(nickname);
 
         return userRepository.save(newUser);
     }
