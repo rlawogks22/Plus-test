@@ -1,8 +1,11 @@
 package com.example.plustest.contorller;
 
 import com.example.plustest.dto.CommonResponseDto;
+import com.example.plustest.dto.PostRequestDto;
 import com.example.plustest.dto.UserRequestDto;
 import com.example.plustest.jwt.JwtUtil;
+import com.example.plustest.security.UserDetailsImpl;
+import com.example.plustest.service.PostService;
 import com.example.plustest.service.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,10 +14,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -22,9 +23,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/users")
 public class UserController {
     private final UserService userService;
+    private final PostService postService;
     private final JwtUtil jwtUtil;
-
-
 
     @PostMapping("/signup")
     public ResponseEntity<String> signUp(@RequestBody UserRequestDto userRequestDto) {
@@ -62,6 +62,8 @@ public class UserController {
         // 로그아웃 성공 메시지 반환
         return ResponseEntity.ok().body(new CommonResponseDto("로그아웃 성공", HttpStatus.OK.value()));
     }
+
+
 
 }
 
