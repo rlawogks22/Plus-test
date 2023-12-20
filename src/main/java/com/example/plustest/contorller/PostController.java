@@ -1,8 +1,6 @@
 package com.example.plustest.contorller;
 
-import com.example.plustest.dto.CommonResponseDto;
-import com.example.plustest.dto.PostRequestDto;
-import com.example.plustest.dto.PostResponseDto;
+import com.example.plustest.dto.*;
 import com.example.plustest.security.UserDetailsImpl;
 import com.example.plustest.service.PostService;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +17,18 @@ import java.util.List;
 public class PostController {
     private final PostService postService;
 
+    @GetMapping("/get")
+    public ResponseEntity<CommonResponseDto> getAll(){
+        PostResponseListDto postListResponseDto = new PostResponseListDto();
+        try {
+            postListResponseDto.setPostResponseDto(getMainPage());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(new CommonResponseDto(e.getMessage(), HttpStatus.BAD_REQUEST.value()));
+        }
+        return ResponseEntity.status(HttpStatus.CREATED.value()).body(postListResponseDto);
+    }
+
+
     @PostMapping
     public ResponseEntity<CommonResponseDto> createPost(@RequestBody PostRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         try {
@@ -33,6 +43,7 @@ public class PostController {
     public List<PostResponseDto> getPostList() {
         return postService.getPostList();
     }
+
 
     @GetMapping("/{postId}")
     public ResponseEntity<CommonResponseDto> getPost(@PathVariable Long postId) {
@@ -62,4 +73,12 @@ public class PostController {
             return ResponseEntity.badRequest().body(new CommonResponseDto(e.getMessage(),HttpStatus.BAD_REQUEST.value()));
         }
     }
+
+    private List<PostResponseDto> getMainPage(){
+        List<PostResponseDto> postResponseDtoList = postService.getAll();
+        return postResponseDtoList;
+    }
+
+
+
 }

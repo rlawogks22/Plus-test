@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Entity
@@ -26,6 +28,8 @@ public class Post extends Timestamped {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @OneToMany(mappedBy = "post", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    private List<Comment> commentList;
 
     public Post(PostRequestDto postRequestDto, UserDetailsImpl userDetails) {
         this.title = postRequestDto.getTitle();
@@ -36,6 +40,10 @@ public class Post extends Timestamped {
     public void update(PostRequestDto postRequestDto) {
         this.title = postRequestDto.getTitle();
         this.content = postRequestDto.getContent();
+    }
+
+    public void addComment(Comment comment){
+        this.commentList.add(comment);
     }
 
 }

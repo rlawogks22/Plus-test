@@ -1,25 +1,19 @@
 package com.example.plustest.service;
 
-import com.example.plustest.dto.CommonResponseDto;
 import com.example.plustest.dto.PostRequestDto;
 import com.example.plustest.dto.PostResponseDto;
+import com.example.plustest.entity.Comment;
 import com.example.plustest.entity.Post;
 import com.example.plustest.entity.User;
+import com.example.plustest.repository.CommentRepository;
 import com.example.plustest.repository.PostRepository;
 import com.example.plustest.security.UserDetailsImpl;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -28,7 +22,19 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class PostService {
     private final PostRepository postRepository;
+    private final CommentRepository commentRepository;
+    PostResponseDto postResponseDto;
     private User user;
+
+    public List<PostResponseDto> getAll() {
+        List<Post> postList = postRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt"));
+        List<PostResponseDto> postResponseDtoList = new ArrayList<>();
+        for (Post p : postList) {
+            postResponseDto = new PostResponseDto(p);
+            postResponseDtoList.add(postResponseDto);
+        }
+        return postResponseDtoList;
+    }
 
     public void createPost(PostRequestDto postRequestDto, UserDetailsImpl userDetails) {
 
@@ -95,4 +101,7 @@ public class PostService {
         return post;
     }
 
+    public PostResponseDto getPostResponseDto() {
+        return postResponseDto;
+    }
 }
